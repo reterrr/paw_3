@@ -3,24 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wyszukiwanie kraju według stolicy</title>
+    <title>Dane Klimatyczne NOAA</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
 </head>
 <body>
     <div class="container">
-        <h1>Wyszukiwanie kraju według stolicy</h1>
-        <input type="text" id="capitalInput" placeholder="Wpisz nazwę stolicy">
-        <button id="load_load">Szukaj</button>
-        
-        <table id="countryTable" style="margin-top: 20px;">
+        <h1>Pobieranie danych klimatycznych z NOAA</h1>
+
+        <!-- Dropdown list for endpoint selection -->
+        <label for="endpointSelect">Wybierz Endpoint:</label>
+        <select id="endpointSelect">
+            <option value="datasets">Datasets</option>
+            <option value="datacategories">Data Categories</option>
+            <option value="datatypes">Data Types</option>
+            <option value="locationcategories">Location Categories</option>
+            <option value="locations">Locations</option>
+            <option value="data">Data</option>
+        </select>
+
+        <!-- Button to load data -->
+        <button id="loadData">Pobierz Dane</button>
+
+        <!-- Table to display results -->
+        <table id="resultsTable" style="margin-top: 20px;">
             <thead>
                 <tr>
+                    <th>ID</th>
                     <th>Name</th>
-                    <th>Capital</th>
-                    <th>Population</th>
-                    <th>Region</th>
-                    <th>Subregion</th>
+                    <th>Additional Info</th>
                 </tr>
             </thead>
             <tbody></tbody>

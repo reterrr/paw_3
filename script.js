@@ -1,54 +1,60 @@
+const apiToken = 'orjuxPLsZXxMSaRahvLoIFZvMwzAHdVJ'; // Replace with your NOAA API token
+const baseUrl = 'https://www.ncei.noaa.gov/cdo-web/api/v2/';
+
 document.addEventListener('DOMContentLoaded', () => {
-    const loadButton = document.getElementById('load_load');
-
-    loadButton.addEventListener('click', () => {
-        const country = document.getElementById('capitalInput').value;
-        const loader = new CountryLoader();
-
-        loader.from('https://restcountries.com/v3.1/capital/', country).run();
+    const loadDataButton = document.getElementById('loadData');
+    
+    loadDataButton.addEventListener('click', () => {
+        const selectedEndpoint = document.getElementById('endpointSelect').value;
+        fetchData(selectedEndpoint);
     });
 });
 
-class CountryLoader {
-    url = '';
-    country = '';
-
-    from(url, country) {
-        this.url = url;
-        this.country = country;
-        return this;
-    }
-
-    async run() {
-        const fullUrl = `${this.url}${this.country}`;
-
-        try {
-            const response = await fetch(fullUrl);
-            if (response.ok) {
-                const countries = await response.json();
-                displayCountryData(countries);
-            } else {
-                alert("Brak wyników lub błąd serwera.");
+async function fetchData(endpoint) {
+    const apiUrl = `${baseUrl}${endpoint}`;
+    
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+                'token': apiToken
             }
-        } catch (error) {
-            console.error("Błąd podczas pobierania danych:", error);
-            alert("Wystąpił błąd podczas pobierania danych.");
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            displayData(endpoint, data.results);
+        } else {
+            console.error('Błąd podczas pobierania danych:', response.statusText);
+            alert('Błąd podczas pobierania danych.');
         }
+    } catch (error) {
+        console.error('Błąd:', error);
+        alert('Wystąpił błąd podczas pobierania danych.');
     }
 }
 
-function displayCountryData(countries) {
-    const tableBody = document.getElementById('countryTable').querySelector('tbody');
-    tableBody.innerHTML = ''; // Wyczyść poprzednie wyniki
+function displayData(endpoint, results) {
+    const tableBody = document.getElementById('resultsTable').querySelector('tbody');
+    tableBody.innerHTML = ''; // Clear previous results
 
-    countries.forEach(country => {
+    results.forEach(item => {
         const row = document.createElement('tr');
+
+        // Customize columns based on the endpoint
+        let additionalInfo = '';
+        if (endpoint === 'locations') {
+            additionalInfo = item.country || 'N/A';
+        } else if (endpoint === 'datasets') {
+            additionalInfo = item.uid || 'N/A';
+        } else {
+            additionalInfo = item.description || 'N/A';
+        }
+
         row.innerHTML = `
-            <td>${country.name.common}</td>
-            <td>${country.capital ? country.capital[0] : 'N/A'}</td>
-            <td>${country.population.toLocaleString()}</td>
-            <td>${country.region}</td>
-            <td>${country.subregion || 'N/A'}</td>
+            <td>${item.id}</td>
+            <td>${item.name || 'N/A'}</td>
+            <td>${additionalInfo}</td>
         `;
         tableBody.appendChild(row);
     });
