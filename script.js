@@ -4,43 +4,70 @@ const apiUrlBase = 'https://api.giphy.com/v1/gifs/search?api_key=';
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    const loadGifButton = document.getElementById('loadGif');
+    let offset = 0; 
+    const limit = 5;
     const gifContainer = document.getElementById('gifContainer');
-    const gifImage = document.getElementById('randomGif');
     const searchInput = document.getElementById('input');
+    const loadGifButton = document.getElementById('loadGif');
+    const prevPageButton = document.getElementById('prevPage');
+    const nextPageButton = document.getElementById('nextPage');
+    const paginationControls = document.getElementById('paginationControls');
 
-    loadGifButton.addEventListener('click', async () => {
-        const searchTerm = searchInput.value.trim(); // Pobranie frazy z pola tekstowego
+    const fetchGIFs = async (searchTerm) => {
+        const apiUrl = `${apiUrlBase}${apiKey}&q=${encodeURIComponent(searchTerm)}&limit=${limit}&offset=${offset}&rating=g`;
+
+        try {
+            const response = await fetch(apiUrl);
+            if (response.ok) {
+                const data = await response.json();
+               
+                gifContainer.innerHTML = '';
+
+                if (data.data.length > 0) {
+                   
+                    data.data.forEach((gif) => {
+                        const gifImg = document.createElement('img');
+                        gifImg.src = gif.images.original.url;
+                        gifImg.style.maxWidth = '100%';
+                        gifImg.style.margin = '10px';
+                        gifContainer.appendChild(gifImg);
+                    });
+
+                    paginationControls.style.display = 'block';
+                } else {
+                    alert('Nie znaleziono GIF-ów dla podanej frazy.');
+                    paginationControls.style.display = 'none';
+                }
+            } else {
+                alert(`Błąd podczas pobierania GIF-ów: ${response.statusText}`);
+            }
+        } catch (error) {
+            console.error('Błąd:', error);
+            alert('Wystąpił błąd sieci podczas pobierania GIF-ów.');
+        }
+    };
+
+    loadGifButton.addEventListener('click', () => {
+        const searchTerm = searchInput.value.trim();
         if (!searchTerm) {
             alert('Wpisz frazę do wyszukiwania!');
             return;
         }
+        offset = 0; 
+        fetchGIFs(searchTerm);
+    });
 
-        
-        const apiUrl = `${apiUrlBase}${apiKey}&q=${encodeURIComponent(searchTerm)}&limit=1&rating=g`;
+    nextPageButton.addEventListener('click', () => {
+        offset += limit;
+        const searchTerm = searchInput.value.trim();
+        fetchGIFs(searchTerm);
+    });
 
-        try {
-            const response = await fetch(apiUrl);
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data.data.length > 0) {
-                    const gifUrl = data.data[0].images.original.url;
-
-                 
-                    gifImage.src = gifUrl;
-                    gifImage.style.display = 'block';
-                } else {
-                    alert('Nie znaleziono GIF-ów dla podanej frazy.');
-                    gifImage.style.display = 'none';
-                }
-            } else {
-                console.error('Błąd odpowiedzi API:', response.statusText);
-                alert(`Błąd podczas pobierania GIF-a: ${response.statusText}`);
-            }
-        } catch (error) {
-            console.error('Błąd sieci:', error);
-            alert('Wystąpił błąd sieci podczas pobierania GIF-a.');
+    prevPageButton.addEventListener('click', () => {
+        if (offset >= limit) {
+            offset -= limit;
         }
+        const searchTerm = searchInput.value.trim();
+        fetchGIFs(searchTerm);
     });
 });

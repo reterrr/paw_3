@@ -3,23 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random GIPHY GIF</title>
+    <title>Wyszukiwanie GIF z GIPHY</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
 </head>
 <body>
     <div class="container">
-        <h1>Wyświetl losowy GIF z GIPHY</h1>
-        <label for="inp">Search your gif</label>
-        <input type="text" id="input" name="inp">  
+        <h1>Wyszukiwanie GIF-ów z GIPHY</h1>
+        <label for="input">Wpisz frazę do wyszukiwania:</label>
+        <input type="text" id="input" name="inp" placeholder="np. koty">
         
-        <button id="loadGif">Search</button>
+        <button id="loadGif">Szukaj GIF</button>
         
-        <!-- Container to display the GIF -->
         <div id="gifContainer" style="margin-top: 20px;">
             <img id="randomGif" src="" alt="Losowy GIF" style="display: none;">
+        </div>
+        <div id="paginationControls" style="margin-top: 20px; display: none;">
+            <button id="prevPage">Poprzednia</button>
+            <button id="nextPage">Następna</button>
         </div>
     </div>
 </body>
 </html>
-
